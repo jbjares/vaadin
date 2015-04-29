@@ -1,15 +1,8 @@
 package com.vaadin.demo.dashboard.view.dashboard;
 
-import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.ExternalResource;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.BrowserFrame;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
@@ -42,7 +35,7 @@ public class DashboardAddDatasource extends Window {
         result.setSpacing(true);
 
 		BrowserFrame shinyAppFileUpload = new BrowserFrame("",
-		new ExternalResource("http://127.0.0.1:7161/?cmd=fileUpload"));
+		new ExternalResource("http://127.0.0.1:9876/?cmd=fileUpload"));
 		shinyAppFileUpload.addStyleName(ValoTheme.LABEL_H1);
 		shinyAppFileUpload.addStyleName(ValoTheme.LABEL_NO_MARGIN);
 		shinyAppFileUpload.setHeight("400");

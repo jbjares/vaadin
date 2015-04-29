@@ -20,8 +20,16 @@ public class DashboardSessionInitListener implements SessionInitListener {
 
             @Override
             public void modifyBootstrapPage(final BootstrapPageResponse response) {
-                final Element head = response.getDocument().head();
-                head.appendElement("meta")
+                final Element head = response.getDocument().head();	
+                // With this code, Vaadin servlet will add the line:
+                //
+                // <script type="text/javascript" 
+                // src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" />
+                //
+                // as the first line inside the document's head tag in the generated html document
+/*                response.getDocument().head().prependElement("script").attr("type", 
+                "text/javascript").attr("src", "//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js");
+*/                head.appendElement("meta")
                         .attr("name", "viewport")
                         .attr("content",
                                 "width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no");

@@ -1,5 +1,6 @@
 package com.vaadin.demo.dashboard.view.dashboard;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -16,6 +17,7 @@ import com.vaadin.demo.dashboard.event.DashboardEvent.NotificationsCountUpdatedE
 import com.vaadin.demo.dashboard.event.DashboardEventBus;
 import com.vaadin.demo.dashboard.view.dashboard.DashboardAddDatasource.DashboardAddDatasourceListener;
 import com.vaadin.demo.dashboard.view.dashboard.DashboardEdit.DashboardEditListener;
+import com.vaadin.demo.dashboard.view.dashboard.DashboardRestCallExample.DashboardRestCallExampleListener;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -30,6 +32,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
@@ -43,7 +46,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
 public final class DashboardView extends Panel implements View,
-        DashboardEditListener,DashboardAddDatasourceListener {
+        DashboardEditListener,DashboardAddDatasourceListener,DashboardRestCallExampleListener {
 
     public static final String EDIT_ID = "dashboard-edit";
     public static final String TITLE_ID = "dashboard-title";
@@ -125,7 +128,8 @@ public final class DashboardView extends Panel implements View,
         notificationsButton = buildNotificationsButton();
         Component edit = buildEditButton();
         Component addDatasource = buildAddDataSourceButton();
-        HorizontalLayout tools = new HorizontalLayout(notificationsButton, edit,addDatasource);
+        Component view= buildTestVRestView();
+        HorizontalLayout tools = new HorizontalLayout(notificationsButton, edit,addDatasource,view);
         tools.setSpacing(true);
         tools.addStyleName("toolbar");
         header.addComponent(tools);
@@ -134,7 +138,38 @@ public final class DashboardView extends Panel implements View,
         return header;
     }
 
-    private NotificationsButton buildNotificationsButton() {
+    private Component buildTestVRestView() {
+        Button result = new Button();
+        result.setId("TEST_RESTCALL_VIEW_ID");
+        result.setIcon(FontAwesome.ARCHIVE);
+        result.addStyleName("icon-edit");
+        result.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+        result.setDescription("Test Rest Call");
+
+        result.addClickListener(new ClickListener() {
+            @Override
+            public void buttonClick(final ClickEvent event) {
+                try {
+					getUI().addWindow(
+					        new DashboardRestCallExample(DashboardView.this, titleLabel
+					                .getValue()));
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NullPointerException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}	
+            }
+        });
+        return result;
+    	
+	}
+
+	private NotificationsButton buildNotificationsButton() {
         NotificationsButton result = new NotificationsButton();
         result.addClickListener(new ClickListener() {
             @Override

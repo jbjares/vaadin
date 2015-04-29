@@ -2,9 +2,18 @@ package com.vaadin.demo.dashboard;
 
 import java.util.Locale;
 
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebListener;
+import javax.servlet.annotation.WebServlet;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.context.ContextLoaderListener;
+
 import com.google.common.eventbus.Subscribe;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
+import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.demo.dashboard.data.DataProvider;
 import com.vaadin.demo.dashboard.data.dummy.DummyDataProvider;
@@ -22,17 +31,36 @@ import com.vaadin.server.Page.BrowserWindowResizeListener;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.spring.annotation.EnableVaadin;
+import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.spring.server.SpringVaadinServlet;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import eu.insight.nhsdashboard.server.HelloBean;
+
+
+@SpringUI
 @Theme("dashboard")
 @Widgetset("com.vaadin.demo.dashboard.DashboardWidgetSet")
 @Title("QuickTickets Dashboard")
 @SuppressWarnings("serial")
 public final class DashboardUI extends UI {
+	
+    @Autowired
+    HelloBean hello;
+    
+    @WebListener
+    public static class MyContextLoaderListener extends ContextLoaderListener {}
 
-    /*
+
+    @Configuration
+    @EnableVaadin
+    public static class MyConfiguration {}
+
+	/*
      * This field stores an access to the dummy backend layer. In real
      * applications you most likely gain access to your beans trough lookup or
      * injection; and not in the UI but somewhere closer to where they're
@@ -40,6 +68,8 @@ public final class DashboardUI extends UI {
      */
     private final DataProvider dataProvider = new DummyDataProvider();
     private final DashboardEventBus dashboardEventbus = new DashboardEventBus();
+    
+
 
     @Override
     protected void init(final VaadinRequest request) {
