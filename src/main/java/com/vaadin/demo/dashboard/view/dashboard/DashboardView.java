@@ -23,12 +23,14 @@ import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -231,9 +233,13 @@ public final class DashboardView extends Panel implements View,
     }
 
     private Component buildTopGrossingMovies() {
-        TopGrossingMoviesChart topGrossingMoviesChart = new TopGrossingMoviesChart();
-        topGrossingMoviesChart.setSizeFull();
-        return createContentWrapper(topGrossingMoviesChart);
+//        TopGrossingMoviesChart topGrossingMoviesChart = new TopGrossingMoviesChart();
+//        topGrossingMoviesChart.setSizeFull();
+//        return createContentWrapper(topGrossingMoviesChart);
+		BrowserFrame shinyApp2DPlot = new BrowserFrame("",
+		new ExternalResource("http://127.0.0.1:9876/?cmd=2DPlot"));
+		shinyApp2DPlot.setSizeFull();
+		return createContentWrapper(shinyApp2DPlot);
     }
 
     private Component buildNotes() {

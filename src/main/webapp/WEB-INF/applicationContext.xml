@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
                            http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/data/mongo
+							http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd
                            http://www.springframework.org/schema/context 
                            http://www.springframework.org/schema/context/spring-context-4.1.xsd">
 
-    <bean class="com.vaadin.demo.dashboard.DashboardUI.MyConfiguration" />
-    <context:component-scan base-package="com.vaadin.demo.dashboard, eu.insight.nhsdashboard.server" />
+	<bean class="com.vaadin.demo.dashboard.DashboardUI.MyConfiguration" />
+	<context:component-scan
+		base-package="com.vaadin.demo.dashboard, eu.insight.nhsdashboard.server" />
+
+	<mongo:db-factory id="mongoDbFactory" host="ds061371.mongolab.com"
+		port="61371" dbname="multivision_jbjares" username="jbjares" password="multivision" />
+
+	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+		<constructor-arg ref="mongoDbFactory" />
+	</bean>
+
+	<mongo:mapping-converter id="converter"
+		db-factory-ref="mongoDbFactory" />
+
+	<bean name="gridFsTemplate"
+		class="org.springframework.data.mongodb.gridfs.GridFsTemplate">
+		<constructor-arg ref="mongoDbFactory" />
+		<constructor-arg ref="converter" />
+	</bean>
+
+
 </beans>
