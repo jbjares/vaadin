@@ -3,21 +3,24 @@ package com.vaadin.demo.dashboard.view.dashboard;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import com.google.common.eventbus.Subscribe;
 import com.vaadin.demo.dashboard.DashboardUI;
 import com.vaadin.demo.dashboard.component.SparklineChart;
-import com.vaadin.demo.dashboard.component.TopGrossingMoviesChart;
 import com.vaadin.demo.dashboard.component.TopSixTheatersChart;
 import com.vaadin.demo.dashboard.component.TopTenMoviesTable;
 import com.vaadin.demo.dashboard.data.dummy.DummyDataGenerator;
 import com.vaadin.demo.dashboard.domain.DashboardNotification;
+import com.vaadin.demo.dashboard.domain.User;
 import com.vaadin.demo.dashboard.event.DashboardEvent.CloseOpenWindowsEvent;
 import com.vaadin.demo.dashboard.event.DashboardEvent.NotificationsCountUpdatedEvent;
 import com.vaadin.demo.dashboard.event.DashboardEventBus;
 import com.vaadin.demo.dashboard.view.dashboard.DashboardAddDatasource.DashboardAddDatasourceListener;
 import com.vaadin.demo.dashboard.view.dashboard.DashboardEdit.DashboardEditListener;
 import com.vaadin.demo.dashboard.view.dashboard.DashboardRestCallExample.DashboardRestCallExampleListener;
+import com.vaadin.event.FieldEvents.BlurEvent;
+import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -27,24 +30,28 @@ import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.BrowserFrame;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.ProgressBar;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+
+import eu.insight.nhsdashboard.server.DashboardService;
+import eu.insight.nhsdashboard.server.SpringBeanFactory;
 
 @SuppressWarnings("serial")
 public final class DashboardView extends Panel implements View,
@@ -90,7 +97,8 @@ public final class DashboardView extends Panel implements View,
         });
     }
 
-    private Component buildSparklines() {
+    @SuppressWarnings("deprecation")
+	private Component buildSparklines() {
         CssLayout sparks = new CssLayout();
         sparks.addStyleName("sparks");
         sparks.setWidth("100%");
@@ -98,19 +106,25 @@ public final class DashboardView extends Panel implements View,
 
         SparklineChart s = new SparklineChart("Traffic", "K", "",
                 DummyDataGenerator.chartColors[0], 22, 20, 80);
-        sparks.addComponent(s);
+        
+        
+        //TODO Increase the performance
+        final ComboBox comboboxX = new ComboBox("Select X");
+        comboboxX.addBlurListener(new ComboparametersBlurListener(comboboxX));
+        sparks.addComponent(comboboxX);
 
-        s = new SparklineChart("Revenue / Day", "M", "$",
-                DummyDataGenerator.chartColors[2], 8, 89, 150);
-        sparks.addComponent(s);
+        
+        final ComboBox comboboxY = new ComboBox("Select X");
+        comboboxY.addBlurListener(new ComboparametersBlurListener(comboboxY));
+        sparks.addComponent(comboboxY);
 
-        s = new SparklineChart("Checkout Time", "s", "",
-                DummyDataGenerator.chartColors[3], 10, 30, 120);
-        sparks.addComponent(s);
-
-        s = new SparklineChart("Theater Fill Rate", "%", "",
-                DummyDataGenerator.chartColors[5], 50, 34, 100);
-        sparks.addComponent(s);
+        final ComboBox comboboxZ = new ComboBox("Select X");
+        comboboxZ.addBlurListener(new ComboparametersBlurListener(comboboxZ));
+        sparks.addComponent(comboboxZ);
+//
+//        s = new SparklineChart("Theater Fill Rate", "%", "",
+//                DummyDataGenerator.chartColors[5], 50, 34, 100);
+//        sparks.addComponent(s);
 
         return sparks;
     }
@@ -453,6 +467,32 @@ public final class DashboardView extends Panel implements View,
             }
             setDescription(description);
         }
+    }
+    
+    public class ComboparametersBlurListener implements BlurListener{
+    	
+    	private ComboBox combotarget;
+    	
+    	ComboparametersBlurListener(ComboBox combo){
+    		combotarget = combo;
+    	}
+
+		@Override
+		public void blur(BlurEvent event) {
+    		ProgressBar bar = new ProgressBar();
+    		bar.setIndeterminate(true);
+    		
+        	User user  = (User) DashboardUI.getSessionScopedVariable(User.class.getName());
+        	if(user!=null){
+        		DashboardService dashboardService = SpringBeanFactory.create(DashboardService.class);
+        		List<String> parameters = dashboardService.getHeaderValues(user.getHashPerSessionID());
+        		for(String parameter:parameters){
+        			combotarget.addItem(parameter);
+        		}
+        		
+        	}	
+		}
+    	
     }
 
 }

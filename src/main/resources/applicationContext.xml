@@ -29,6 +29,5 @@
 		<constructor-arg ref="converter" />
 	</bean>
 
-	<mongo:repositories base-package="org.springframework" />
 
 </beans>

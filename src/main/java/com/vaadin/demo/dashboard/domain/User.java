@@ -12,8 +12,20 @@ public final class User {
     private Integer newsletterSubscription;
     private String website;
     private String bio;
+    private String hashPerSessionID;
+    
+    
+    
 
-    public String getEmail() {
+    public String getHashPerSessionID() {
+		return hashPerSessionID;
+	}
+
+	public void setHashPerSessionID(String hashPerSessionID) {
+		this.hashPerSessionID = hashPerSessionID;
+	}
+
+	public String getEmail() {
         return email;
     }
 

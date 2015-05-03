@@ -1,10 +1,9 @@
 package com.vaadin.demo.dashboard;
 
 import java.util.Locale;
+import java.util.UUID;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebListener;
-import javax.servlet.annotation.WebServlet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -13,8 +12,8 @@ import org.springframework.web.context.ContextLoaderListener;
 import com.google.common.eventbus.Subscribe;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
-import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.Widgetset;
+import com.vaadin.data.Property;
 import com.vaadin.demo.dashboard.data.DataProvider;
 import com.vaadin.demo.dashboard.data.dummy.DummyDataProvider;
 import com.vaadin.demo.dashboard.domain.User;
@@ -33,8 +32,6 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.EnableVaadin;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.spring.server.SpringVaadinServlet;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
@@ -116,9 +113,12 @@ public final class DashboardUI extends UI {
     public void userLoginRequested(final UserLoginRequestedEvent event) {
         User user = getDataProvider().authenticate(event.getUserName(),
                 event.getPassword());
+        String session = VaadinSession.getCurrent().getSession().getId();
+        user.setHashPerSessionID(session);
         VaadinSession.getCurrent().setAttribute(User.class.getName(), user);
         updateContent();
     }
+
 
     @Subscribe
     public void userLoggedOut(final UserLoggedOutEvent event) {
@@ -146,4 +146,19 @@ public final class DashboardUI extends UI {
     public static DashboardEventBus getDashboardEventbus() {
         return ((DashboardUI) getCurrent()).dashboardEventbus;
     }
+    
+
+
+	@SuppressWarnings("unchecked")
+	public static Object getSessionScopedVariable(String valueStr) {
+		Object value = VaadinSession.getCurrent().getAttribute(valueStr);
+		return value == null ? null : value;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static void setSessionScopedVariable(String key,Object value) {
+		VaadinSession.getCurrent().setAttribute(key, value);
+	}
+	
+	
 }

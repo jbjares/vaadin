@@ -1,30 +1,30 @@
 package eu.insight.nhsdashboard.server;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.mongodb.core.CollectionCallback;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.google.gson.Gson;
 import com.mongodb.BasicDBObject;
-import com.mongodb.CommandResult;
 import com.mongodb.DB;
-import com.mongodb.DBAddress;
-import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
-import com.mongodb.MongoException;
+
+import eu.insight.nhsdashboard.server.db.MongoUtils;
 
 
 
@@ -33,25 +33,27 @@ import com.mongodb.MongoException;
 @SpringApplicationConfiguration(classes = DashboardService.class)  
 public class DashboardServiceTest {
 
-	      
+	@Autowired
+	private DashboardService dashboardService;
 	
-	@Test
-	public void getHeadersTest(){
-	     String textUri = "mongodb://jbjares:multivision@ds061371.mongolab.com:61371/multivision_jbjares";
-	     MongoClientURI uri = new MongoClientURI(textUri);
-	     MongoClient m = new MongoClient(uri);
+	@Ignore
+	public void tesDI(){
+		Assert.assertNotNull(dashboardService);
+	}
 
+	@Test
+	public void getHeadersTest() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, ParseException, InstantiationException{
+		//dashboardService.getHeaderValues();
 		
-		List<String> headers = new ArrayList<String>();
-		MongoTemplate mongoTemplate = SpringBeanFactory.create(org.springframework.data.mongodb.core.MongoTemplate.class);
 		BasicDBObject searchQuery=new BasicDBObject();
-	    searchQuery.put("_id", new ObjectId("55418c1510fc35b4fa9ced38"));
-	    DB db = m.getDB("multivision_jbjares");
+	    searchQuery.put("hash", "123");
+	    DB db = MongoUtils.getMongoDB();
 	    DBCursor cursor = db.getCollection("HeaderCacheTO").find(searchQuery);
-	    if( cursor.hasNext() ){
-	    	DBObject obj = cursor.next();
-	    	System.out.println(obj.toMap().toString());
+	    if(cursor.hasNext()){
+	    	DBObject dbObj = cursor.next();
+	    	List result = new Gson().fromJson(dbObj.get("value").toString(),List.class);
 	    }
 	}
+
 
 }
